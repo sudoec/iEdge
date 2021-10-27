@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\iEdge.cpp" />
+    <ClCompile Include="src\minhook\src\buffer.c">
+      <Filter>minhool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minhook\src\hook.c">
+      <Filter>minhool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minhook\src\trampoline.c">
+      <Filter>minhool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minhook\src\HDE\hde32.c">
+      <Filter>minhool\HDE</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minhook\src\HDE\hde64.c">
+      <Filter>minhool\HDE</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Bosskey.h" />
+    <ClInclude Include="src\iEdge.h" />
+    <ClInclude Include="src\Parsekeys.h" />
+    <ClInclude Include="src\TabBookmark.h" />
+    <ClInclude Include="src\Util.h" />
+    <ClInclude Include="src\version.h" />
+    <ClInclude Include="src\minhook\src\buffer.h">
+      <Filter>minhool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\trampoline.h">
+      <Filter>minhool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\HDE\hde32.h">
+      <Filter>minhool\HDE</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\HDE\hde64.h">
+      <Filter>minhool\HDE</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\HDE\pstdint.h">
+      <Filter>minhool\HDE</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\HDE\table32.h">
+      <Filter>minhool\HDE</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\src\HDE\table64.h">
+      <Filter>minhool\HDE</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minhook\include\MinHook.h">
+      <Filter>minhool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gesture\GestureMgr.h">
+      <Filter>gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gesture\GestureRecognition.h">
+      <Filter>gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gesture\GestureWindow.h">
+      <Filter>gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gesture\LayeredWindowUtils.h">
+      <Filter>gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SharedConfig.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="iEdge.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="minhool">
+      <UniqueIdentifier>{611c4cd1-615f-4776-b960-77e73d8e53ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="minhool\HDE">
+      <UniqueIdentifier>{4399d619-d061-47ff-a07e-e76808b4c0d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gesture">
+      <UniqueIdentifier>{5c2712b5-b79f-433c-b215-32a005a6f766}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
