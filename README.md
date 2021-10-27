@@ -16,5 +16,5 @@
 **本软件是免费软件，不收一分钱，只是分享给朋友们使用，不负责售后服务。使用/更新前务必备份用户数据，软件造成任何数据丢失，本人概不负责。**
 
 ## 鸣谢
-https://shuax.com/
-https://github.com/shuax/GreenChrome
+https://shuax.com/  
+https://github.com/shuax/GreenChrome  
