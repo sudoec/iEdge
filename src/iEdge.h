@@ -41,24 +41,32 @@ typedef uint64_t MWORD;
 typedef uint32_t MWORD;
 #endif
 
-void iEdge();
+void GreenChrome();
 
 HMODULE hInstance;
 
 #include "..\version.h"
 
-#include "SharedConfig.h"
 #include "version.h"
 #include "util.h"
 
+#include "SharedConfig.h"
+
 #include "minhook\include\MinHook.h"
+
+#include "mongoose\mongoose.h"
+#include "SettingWeb.h"
+
+#include "patchs.h"
+#include "PatchResourcesPak.h"
+#include "GetParent.h"
 
 #include "gesture\GestureRecognition.h"
 #include "gesture\GestureWindow.h"
 #include "gesture\GestureMgr.h"
 #include "TabBookmark.h"
 
-#include "patchs.h"
 #include "Bosskey.h"
+#include "CustomCommand.h"
 
 #endif // __MAIN_H__

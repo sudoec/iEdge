@@ -16,6 +16,14 @@ std::string HomePage;
 #pragma data_seg()
 #pragma comment(linker, "/section:.SHARED,RWS")
 
+void GetHomePage(const wchar_t* iniPath)
+{
+    wchar_t buffer[256];
+    GetPrivateProfileStringW(L"基本设置", L"主页", L"", buffer, 256, iniPath);
+    std::wstring wPage(buffer);
+    HomePage = std::string(wPage.begin(),wPage.end());
+}
+
 void ReadConfig(const wchar_t *iniPath)
 {
     DoubleClickCloseTab = GetPrivateProfileInt(L"界面增强", L"双击关闭标签页", 1, iniPath) == 1;
@@ -30,6 +38,8 @@ void ReadConfig(const wchar_t *iniPath)
     FrontNewTab = GetPrivateProfileInt(L"界面增强", L"前台打开新标签", 1, iniPath) == 1;
 
     MouseGesture = GetPrivateProfileInt(L"鼠标手势", L"启用", 1, iniPath) == 1;
+
+    GetHomePage(iniPath);
 }
 
 std::wstring CheckArgs(const wchar_t* iniPath)

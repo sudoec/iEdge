@@ -114,58 +114,61 @@ BOOL WINAPI FakeGetVolumeInformation(
 
 // 不让chrome使用GetComputerNameW，GetVolumeInformationW
 // chromium/rlz/win/lib/machine_id_win.cc
-void MakePortable()
+void MakePortable(const wchar_t *iniPath)
 {
-    HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
-    if(kernel32)
+    if(GetPrivateProfileIntW(L"基本设置", L"便携化", 1, iniPath)==1)
     {
-        PBYTE GetComputerNameW = (PBYTE)GetProcAddress(kernel32, "GetComputerNameW");
-        PBYTE GetVolumeInformationW = (PBYTE)GetProcAddress(kernel32, "GetVolumeInformationW");
+        HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
+        if(kernel32)
+        {
+            PBYTE GetComputerNameW = (PBYTE)GetProcAddress(kernel32, "GetComputerNameW");
+            PBYTE GetVolumeInformationW = (PBYTE)GetProcAddress(kernel32, "GetVolumeInformationW");
 
-        MH_STATUS status = MH_CreateHook(GetComputerNameW, FakeGetComputerName, NULL);
-        if (status == MH_OK)
-        {
-            MH_EnableHook(GetComputerNameW);
+            MH_STATUS status = MH_CreateHook(GetComputerNameW, FakeGetComputerName, NULL);
+            if (status == MH_OK)
+            {
+                MH_EnableHook(GetComputerNameW);
+            }
+            else
+            {
+                DebugLog(L"MH_CreateHook GetComputerNameW failed:%d", status);
+            }
+            status = MH_CreateHook(GetVolumeInformationW, FakeGetVolumeInformation, NULL);
+            if (status == MH_OK)
+            {
+                MH_EnableHook(GetVolumeInformationW);
+            }
+            else
+            {
+                DebugLog(L"MH_CreateHook GetVolumeInformationW failed:%d", status);
+            }
         }
-        else
-        {
-            DebugLog(L"MH_CreateHook GetComputerNameW failed:%d", status);
-        }
-        status = MH_CreateHook(GetVolumeInformationW, FakeGetVolumeInformation, NULL);
-        if (status == MH_OK)
-        {
-            MH_EnableHook(GetVolumeInformationW);
-        }
-        else
-        {
-            DebugLog(L"MH_CreateHook GetVolumeInformationW failed:%d", status);
-        }
-    }
 
-    //components/os_crypt/os_crypt_win.cc
-    HMODULE Crypt32 = LoadLibraryW(L"Crypt32.dll");
-    if(Crypt32)
-    {
-        PBYTE CryptProtectData = (PBYTE)GetProcAddress(Crypt32, "CryptProtectData");
-        PBYTE CryptUnprotectData = (PBYTE)GetProcAddress(Crypt32, "CryptUnprotectData");
+        //components/os_crypt/os_crypt_win.cc
+        HMODULE Crypt32 = LoadLibraryW(L"Crypt32.dll");
+        if(Crypt32)
+        {
+            PBYTE CryptProtectData = (PBYTE)GetProcAddress(Crypt32, "CryptProtectData");
+            PBYTE CryptUnprotectData = (PBYTE)GetProcAddress(Crypt32, "CryptUnprotectData");
 
-        MH_STATUS status = MH_CreateHook(CryptProtectData, MyCryptProtectData, NULL);
-        if (status == MH_OK)
-        {
-            MH_EnableHook(CryptProtectData);
-        }
-        else
-        {
-            DebugLog(L"MH_CreateHook CryptProtectData failed:%d", status);
-        }
-        status = MH_CreateHook(CryptUnprotectData, MyCryptUnprotectData, (LPVOID*)&RawCryptUnprotectData);
-        if (status == MH_OK)
-        {
-            MH_EnableHook(CryptUnprotectData);
-        }
-        else
-        {
-            DebugLog(L"MH_CreateHook CryptUnprotectData failed:%d", status);
+            MH_STATUS status = MH_CreateHook(CryptProtectData, MyCryptProtectData, NULL);
+            if (status == MH_OK)
+            {
+                MH_EnableHook(CryptProtectData);
+            }
+            else
+            {
+                DebugLog(L"MH_CreateHook CryptProtectData failed:%d", status);
+            }
+            status = MH_CreateHook(CryptUnprotectData, MyCryptUnprotectData, (LPVOID*)&RawCryptUnprotectData);
+            if (status == MH_OK)
+            {
+                MH_EnableHook(CryptUnprotectData);
+            }
+            else
+            {
+                DebugLog(L"MH_CreateHook CryptUnprotectData failed:%d", status);
+            }
         }
     }
 }

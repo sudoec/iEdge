@@ -28,7 +28,7 @@ SHORT WINAPI DetourGetKeyState(int vKey)
 }
 
 
-void iEdge()
+void GreenChrome()
 {
     // exe路径
     wchar_t exePath[MAX_PATH];
@@ -49,8 +49,8 @@ void iEdge()
     // 参数启动
     CheckArgs(iniPath);
 
-    // 打造便携版Edge
-    MakePortable();
+    // 打造便携版chrome
+    MakePortable(iniPath);
 
     // 标签页，书签，地址栏增强
     TabBookmark();
@@ -73,7 +73,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, LPVOID pv)
         {
             MH_CreateHook(&GetKeyState, &DetourGetKeyState, reinterpret_cast<LPVOID*>(&fpGetKeyState));
             MH_EnableHook(&GetKeyState);
-            iEdge();
+            GreenChrome();
         }
 
     }

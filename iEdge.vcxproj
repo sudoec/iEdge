@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Bosskey.h" />
+    <ClInclude Include="src\cJSON\cJSON.h" />
+    <ClInclude Include="src\CustomCommand.h" />
     <ClInclude Include="src\gesture\GestureMgr.h" />
     <ClInclude Include="src\gesture\GestureRecognition.h" />
     <ClInclude Include="src\gesture\GestureWindow.h" />
     <ClInclude Include="src\gesture\LayeredWindowUtils.h" />
+    <ClInclude Include="src\GetParent.h" />
     <ClInclude Include="src\iEdge.h" />
     <ClInclude Include="src\minhook\include\MinHook.h" />
     <ClInclude Include="src\minhook\src\buffer.h" />
@@ -33,19 +36,23 @@
     <ClInclude Include="src\minhook\src\HDE\table32.h" />
     <ClInclude Include="src\minhook\src\HDE\table64.h" />
     <ClInclude Include="src\minhook\src\trampoline.h" />
+    <ClInclude Include="src\mongoose\mongoose.h" />
     <ClInclude Include="src\Parsekeys.h" />
+    <ClInclude Include="src\Patchs.h" />
     <ClInclude Include="src\SharedConfig.h" />
     <ClInclude Include="src\TabBookmark.h" />
     <ClInclude Include="src\Util.h" />
     <ClInclude Include="src\version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\cJSON\cJSON.c" />
     <ClCompile Include="src\iEdge.cpp" />
     <ClCompile Include="src\minhook\src\buffer.c" />
     <ClCompile Include="src\minhook\src\HDE\hde32.c" />
     <ClCompile Include="src\minhook\src\HDE\hde64.c" />
     <ClCompile Include="src\minhook\src\hook.c" />
     <ClCompile Include="src\minhook\src\trampoline.c" />
+    <ClCompile Include="src\mongoose\mongoose.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="iEdge.rc" />
@@ -103,35 +110,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)\Debug\x64\</OutDir>
+    <IntDir>$(ProjectDir)$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>version</TargetName>
     <IncludePath>src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)\Release\x64\</OutDir>
+    <IntDir>$(ProjectDir)$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>version</TargetName>
     <IncludePath>src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)\Debug\x86\</OutDir>
+    <IntDir>$(ProjectDir)$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <TargetName>version</TargetName>
+    <TargetName>winmm</TargetName>
     <IncludePath>src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)\Release\x86\</OutDir>
+    <IntDir>$(ProjectDir)$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <TargetName>version</TargetName>
+    <TargetName>winmm</TargetName>
     <IncludePath>src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
