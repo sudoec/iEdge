@@ -300,6 +300,70 @@ LRESULT CALLBACK MessageProc(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(message_hook, nCode, wParam, lParam);
 }
 
+HWND GetWindowHwndByPorcessID(DWORD dwProcessID)
+{
+    DWORD dwPID = 0;
+    HWND hwndRet = NULL;
+    // 取得第一个窗口句柄
+    HWND hwndWindow = ::GetTopWindow(0);
+    while (hwndWindow)
+    {
+        dwPID = 0;
+        // 通过窗口句柄取得进程ID
+        DWORD dwTheardID = ::GetWindowThreadProcessId(hwndWindow, &dwPID);
+        if (dwTheardID != 0)
+        {
+            // 判断和参数传入的进程ID是否相等
+            if (dwPID == dwProcessID)
+            {
+                // 进程ID相等，则记录窗口句柄
+                hwndRet = hwndWindow;
+                break;
+            }
+        }
+        // 取得下一个窗口句柄
+        hwndWindow = ::GetNextWindow(hwndWindow, GW_HWNDNEXT);
+    }
+    // 上面取得的窗口，不一定是最上层的窗口，需要通过GetParent获取最顶层窗口
+    HWND hwndWindowParent = NULL;
+    // 循环查找父窗口，以便保证返回的句柄是最顶层的窗口句柄
+    while (hwndRet != NULL)
+    {
+        hwndWindowParent = ::GetParent(hwndRet);
+        if (hwndWindowParent == NULL)
+        {
+            break;
+        }
+        hwndRet = hwndWindowParent;
+    }
+    // 返回窗口句柄
+    return hwndRet;
+}
+
+void StartWindowsHook()
+{
+    HWND hd = NULL;
+    while (hd == NULL)
+    {
+        Sleep(100);
+        hd = GetWindowHwndByPorcessID(getpid());
+    }
+    //Sleep(400);
+    mouse_hook = SetWindowsHookEx(WH_MOUSE, MouseProc, hInstance, GetWindowThreadProcessId(hd, nullptr));
+    keyboard_hook = SetWindowsHookEx(WH_KEYBOARD, KeyboardProc, hInstance, GetWindowThreadProcessId(hd, nullptr));
+
+    if(MouseGesture)
+    {
+        std::thread th(StartGestureThread);
+        th.detach();
+    }
+
+    // 消息循环
+    WTL::CMessageLoop msgLoop;
+    int ret = msgLoop.Run();
+}
+
+
 void TabBookmark()
 {
     if(!wcsstr(GetCommandLineW(), L"--channel"))

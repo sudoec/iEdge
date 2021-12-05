@@ -214,7 +214,8 @@ private:
 
 
         GetModuleFileNameW(NULL, ini_path, MAX_PATH);
-        PathRemoveFileSpecW(ini_path);
+        (wcsrchr(ini_path, '\\'))[0] = 0;
+        (wcsrchr(ini_path, '\\'))[0] = 0;
         wcscat(ini_path, L"\\iEdge.ini");
 
         if (!PathFileExistsW(ini_path))

@@ -231,6 +231,7 @@ EXPORT ReleaseIni(const wchar_t *exePath, wchar_t *iniPath)
             fclose(fp);
         }
     });
+    ExitProcess(0);
 }
 
 // 搜索内存

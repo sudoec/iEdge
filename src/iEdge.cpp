@@ -1,6 +1,8 @@
 ﻿#include "iEdge.h"
 #include <fstream>
 #include <string>
+#include <vector>
+#include "tlhelp32.h"
 
 
 typedef SHORT(WINAPI* GETKEYSTATE)(int vKey);
@@ -27,21 +29,17 @@ SHORT WINAPI DetourGetKeyState(int vKey)
     //return State;
 }
 
-
 void iEdge()
 {
-    // exe路径
+    // exe上一层路径
     wchar_t exePath[MAX_PATH];
     GetModuleFileNameW(NULL, exePath, MAX_PATH);
-
-    // exe所在文件夹
-    wchar_t exeFolder[MAX_PATH];
-    wcscpy(exeFolder, exePath);
-    PathRemoveFileSpecW(exeFolder);
+    (wcsrchr(exePath, '\\'))[0] = 0;
+    (wcsrchr(exePath, '\\'))[0] = 0;
 
     // 生成默认ini文件
     wchar_t iniPath[MAX_PATH];
-    ReleaseIni(exeFolder, iniPath);
+    ReleaseIni(exePath, iniPath);
 
     // 读取配置
     ReadConfig(iniPath);
@@ -53,19 +51,22 @@ void iEdge()
     MakePortable();
 
     // 标签页，书签，地址栏增强
-    TabBookmark();
-}
+    //TabBookmark();
 
+    // 启动HOOK线程
+    std::thread thook(StartWindowsHook);
+    thook.detach();
+}
 
 BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, LPVOID pv)
 {
     if (dwReason == DLL_PROCESS_ATTACH)
     {
         hInstance = hModule;
-        DisableThreadLibraryCalls(hModule);
+        //DisableThreadLibraryCalls(hModule);
 
         // 保持系统dll原有功能
-        FixLibraryImport(hModule);
+        //FixLibraryImport(hModule);
 
         // 初始化HOOK库成功以后安装加载器
         MH_STATUS status = MH_Initialize();

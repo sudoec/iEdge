@@ -1,4 +1,5 @@
 #pragma data_seg(".SHARED")
+#include <string>
 
 bool HoverActivateTab = false;
 int HoverTime = HOVER_DEFAULT;
@@ -18,6 +19,9 @@ void ReadConfig(const wchar_t *iniPath)
     OpenUrlNewTab = GetPrivateProfileInt(L"界面增强", L"新标签打开网址", 0, iniPath) == 1;
 
     MouseGesture = GetPrivateProfileInt(L"鼠标手势", L"启用", 1, iniPath) == 1;
+
+    //MessageBox(NULL, std::to_wstring(MouseGesture).c_str(), L"", MB_OK);
+    
 }
 
 std::wstring CheckArgs(const wchar_t* iniPath)
