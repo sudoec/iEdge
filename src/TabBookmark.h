@@ -253,7 +253,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         //    return CallNextHookEx(keyboard_hook, nCode, wParam, lParam);
         //}
 
-        if (wParam == 'T' && IsPressed(VK_CONTROL))
+        if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
         {
             std::thread th(OpenHomePage);
             th.detach();
