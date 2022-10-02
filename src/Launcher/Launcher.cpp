@@ -73,7 +73,7 @@ BOOL InjectDll(HANDLE ProcessHandle, LPWSTR DllFullPath)
     return TRUE;
 }
 
-wstring GetFolder(LPWSTR Dir)
+wstring GetAppFolder(LPWSTR Dir)
 {
     //文件句柄
     //注意：我发现有些文章代码此处是long类型，实测运行中会报错访问异常
@@ -89,6 +89,30 @@ wstring GetFolder(LPWSTR Dir)
             {
                 wstring filename = fileinfo.name;
                 if (count(filename.begin(), filename.end(), '.') == 3)
+                    return filename;
+            }
+        } while (_wfindnext(hFile, &fileinfo) == 0);
+        _findclose(hFile);
+    }
+    return wstring(L"");
+}
+
+wstring GetDataFolder(LPWSTR Dir)
+{
+    //文件句柄
+    //注意：我发现有些文章代码此处是long类型，实测运行中会报错访问异常
+    intptr_t hFile = 0;
+    //文件信息
+    struct _wfinddata_t fileinfo;
+    wstring p;
+    if ((hFile = _wfindfirst(p.assign(Dir).append(L"\\*").c_str(), &fileinfo)) != -1)
+    {
+        do
+        {
+            if ((fileinfo.attrib & _A_SUBDIR))
+            {
+                wstring filename = fileinfo.name;
+                if (filename.length() > 1 && count(filename.begin(), filename.end(), '.') == 1)
                     return filename;
             }
         } while (_wfindnext(hFile, &fileinfo) == 0);
@@ -123,13 +147,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     GetModuleFileNameW(NULL, sWinDir, MAX_PATH);
     (wcsrchr(sWinDir, '\\'))[1] = 0;
 
-    wstring sConLin = wstring(sWinDir) + GetFolder(sWinDir) + L"\\msedge.exe";
+    wstring sConLin = wstring(sWinDir) + GetAppFolder(sWinDir) + L"\\msedge.exe";
     wstring sDllPath = wstring(sWinDir) + L"iEdge.dll";
     wstring lpConLin = wstring(lpCmdLine);
 
     wchar_t Params[2048];
     GetPrivateProfileSectionW(L"启动参数", Params, 2048, wstring(sWinDir).append(L"iEdge.ini").c_str());
-    sConLin.append(L" ").append(wstring(Params));
+    wstring sParams = Params;
+    size_t pIndex = sParams.find(L'"', sParams.find(L'"')+1);
+    if (pIndex > 0 && pIndex != sParams.npos && sParams[pIndex-1] == L'.')
+    {
+        std::hash<std::wstring> hasher;
+        size_t hWinDir = hasher(sWinDir);
+        wstring hashStr = to_wstring(hWinDir).substr(0, 4);
+        sParams.insert(pIndex, hashStr);
+
+        wstring sData = wstring(sWinDir) + GetDataFolder(sWinDir);
+        wstring nData = sParams.substr(sParams.find(L'"'), pIndex-sParams.find(L'"'));
+        nData = wstring(sWinDir) + nData.substr(nData.rfind(L'\\')+1) + hashStr;
+        
+        if (sData != nData)
+            _wrename(sData.c_str(), nData.c_str());
+    }
+
+    sConLin.append(L" ").append(sParams);
 
 
     STARTUPINFO si;
