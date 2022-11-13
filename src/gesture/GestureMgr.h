@@ -65,8 +65,11 @@ public:
             {
                 if(IsPressed(VK_RBUTTON))
                 {
-                    gesture_recognition.move(pmouse->pt.x, pmouse->pt.y);
-                    gesture_window->SendMessageW(WM_USER_UPDATE);
+                    if (pmouse->pt.x != 0 && pmouse->pt.y != 0)
+                    {
+                        gesture_recognition.move(pmouse->pt.x, pmouse->pt.y);
+                        gesture_window->SendMessageW(WM_USER_UPDATE);
+                    }
                 }
                 else
                 {

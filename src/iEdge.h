@@ -60,5 +60,6 @@ HMODULE hInstance;
 
 #include "patchs.h"
 #include "Bosskey.h"
+#include "Appid.h"
 
 #endif // __MAIN_H__

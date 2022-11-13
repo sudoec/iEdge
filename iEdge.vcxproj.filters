@@ -62,6 +62,7 @@
       <Filter>gesture</Filter>
     </ClInclude>
     <ClInclude Include="src\SharedConfig.h" />
+    <ClInclude Include="src\Appid.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="iEdge.rc" />
@@ -76,5 +77,18 @@
     <Filter Include="gesture">
       <UniqueIdentifier>{5c2712b5-b79f-433c-b215-32a005a6f766}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="iEdge.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\up.png" />
+    <Image Include="res\down.png" />
+    <Image Include="res\left.png" />
+    <Image Include="res\right.png" />
+    <Image Include="res\topleft.png" />
+    <Image Include="res\topright.png" />
+    <Image Include="res\down_left.png" />
+    <Image Include="res\down_right.png" />
   </ItemGroup>
 </Project>

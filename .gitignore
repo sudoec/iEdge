@@ -1,5 +1,6 @@
 .vs
 bin
+*.aps
 *.obj
 *.pdb
 *.log

@@ -48,33 +48,29 @@ private:
     std::vector <INPUT> inputs_;
 };
 
-void OpenHomePage1()
-{
-    Sleep(20);
-    SendKey(std::wstring(L"Alt+D"));
-    KEY_DISABLE = TRUE;
-    SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_BACK, 0);
-    SendMessage(GetForegroundWindow(), WM_KEYUP, VK_BACK, 0);
-    for (int i = 0; i < HomePage.length(); i++)
-    {
-        PostMessage(GetForegroundWindow(), WM_CHAR, HomePage[i], 0);
-    }
-    Sleep(120);
-    KEY_DISABLE = FALSE;
-    SendKey(std::wstring(L"Alt+Enter"));
-
-}
-
-void OpenHomePage()
-{
-    SendKey(std::wstring(L"Ctrl+T"));
-    //KEY_DISABLE = TRUE;
-    //SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_TAB, 0);
-    //SendMessage(GetForegroundWindow(), WM_KEYUP, VK_TAB, 0);
-    //KEY_DISABLE = FALSE;
-    //SendKey(std::wstring(L"Alt+Home"));
-
-}
+//void OpenHomePage()
+//{
+//    //SendKey(std::wstring(L"Ctrl+T"));
+//    //KEY_DISABLE = TRUE;
+//    //SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_TAB, 0);
+//    //SendMessage(GetForegroundWindow(), WM_KEYUP, VK_TAB, 0);
+//    //KEY_DISABLE = FALSE;
+//    //SendKey(std::wstring(L"Alt+Home"));
+//
+//    Sleep(20);
+//    SendKey(std::wstring(L"Alt+D"));
+//    KEY_DISABLE = TRUE;
+//    SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_BACK, 0);
+//    SendMessage(GetForegroundWindow(), WM_KEYUP, VK_BACK, 0);
+//    for (int i = 0; i < HomePage.length(); i++)
+//    {
+//        PostMessage(GetForegroundWindow(), WM_CHAR, HomePage[i], 0);
+//    }
+//    Sleep(120);
+//    KEY_DISABLE = FALSE;
+//    SendKey(std::wstring(L"Alt+Enter"));
+//
+//}
 
 
 /*
@@ -253,17 +249,34 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         //    return CallNextHookEx(keyboard_hook, nCode, wParam, lParam);
         //}
 
+
         if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
         {
-            std::thread th(OpenHomePage);
+            std::thread th([]() {SendKey(std::wstring(L"Alt+T")); });
             th.detach();
             return 1;
         }
 
-        if (wParam == 'W' && close_tab_ing)
+        if (wParam == 'W' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
         {
-            close_tab_ing = false;
-            return CallNextHookEx(keyboard_hook, nCode, wParam, lParam);
+            std::thread th([]() {SendKey(std::wstring(L"Alt+W")); });
+            th.detach();
+            return 1;
+        }
+
+        if (wParam == VK_RETURN && IsPressed(VK_MENU))  //后台打开地址栏跳转标签
+        {
+            std::thread th([]()
+            {
+                KEY_MENU = TRUE;
+                KEY_SHIFT = TRUE;
+                SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_RETURN, 0);
+                SendMessage(GetForegroundWindow(), WM_KEYUP, VK_RETURN, 0);
+                KEY_MENU = FALSE;
+                KEY_SHIFT = FALSE;
+            });
+            th.detach();
+            return 1;
         }
 
     }

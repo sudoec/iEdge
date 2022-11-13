@@ -151,6 +151,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wstring sDllPath = wstring(sWinDir) + L"iEdge.dll";
     wstring lpConLin = wstring(lpCmdLine);
 
+    DWORD dwAttrib = GetFileAttributes(sConLin.c_str());
+    if(INVALID_FILE_ATTRIBUTES == dwAttrib || 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+        sConLin = wstring(sWinDir) + GetAppFolder(sWinDir) + L"\\chrome.exe";
+
     wchar_t Params[2048];
     GetPrivateProfileSectionW(L"Æô¶¯²ÎÊý", Params, 2048, wstring(sWinDir).append(L"iEdge.ini").c_str());
     wstring sParams = Params;

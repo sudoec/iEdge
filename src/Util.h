@@ -388,11 +388,6 @@ void SendInputUp(DWORD vk)
 
 void SendKey(std::wstring &keys)
 {
-    //if (keys.compare(L"Ctrl+T") == 0)
-    //{
-    //    OpenHomePage();
-    //    return;
-    //}
 
     std::vector <WORD> vks;
     wchar_t *temp = _tcsdup(keys.c_str());
@@ -493,16 +488,6 @@ void SendKey(std::wstring &keys)
     KEY_CONTROL = FALSE;
     KEY_MENU = FALSE;
     KEY_LWIN = FALSE;
-
-    if (keys.compare(L"Ctrl+T") == 0)
-    {
-        Sleep(80);
-        KEY_DISABLE = TRUE;
-        SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_TAB, 0);
-        SendMessage(GetForegroundWindow(), WM_KEYUP, VK_TAB, 0);
-        KEY_DISABLE = FALSE;
-        SendKey(std::wstring(L"Alt+Home"));
-    }
 }
 
 // 发送鼠标消息

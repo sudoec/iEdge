@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Appid.h" />
     <ClInclude Include="src\Bosskey.h" />
     <ClInclude Include="src\gesture\GestureMgr.h" />
     <ClInclude Include="src\gesture\GestureRecognition.h" />
@@ -50,6 +51,19 @@
   <ItemGroup>
     <ResourceCompile Include="iEdge.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="iEdge.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\down.png" />
+    <Image Include="res\down_left.png" />
+    <Image Include="res\down_right.png" />
+    <Image Include="res\left.png" />
+    <Image Include="res\right.png" />
+    <Image Include="res\topleft.png" />
+    <Image Include="res\topright.png" />
+    <Image Include="res\up.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB164295-8F25-4C33-AAF9-DC74D223FFCE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -60,28 +74,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>

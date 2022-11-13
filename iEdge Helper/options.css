@@ -1,0 +1,25 @@
+body {
+  font-size: 12px;
+  width: 310px;
+}
+
+#context-menu-action,
+#extension-icon-action {
+  float: right;
+  font-size: 12px;
+}
+
+#context-menu-action-section,
+#keyboard-shortcuts-button {
+  margin-top: 20px;
+}
+
+#info-icon {
+  width: 20px;
+  vertical-align: middle;
+}
+
+#options-note {
+  font-size: 11px;
+  margin-top: 15px;
+}

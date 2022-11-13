@@ -6,6 +6,7 @@ int HoverTime = HOVER_DEFAULT;
 bool RightTabSwitch = false;
 bool OpenUrlNewTab = false;
 bool MouseGesture = false;
+bool EnableSetAppId = false;
 std::string HomePage;
 
 #pragma data_seg()
@@ -13,6 +14,7 @@ std::string HomePage;
 
 void ReadConfig(const wchar_t *iniPath)
 {
+    EnableSetAppId = GetPrivateProfileInt(L"界面增强", L"快捷方式", 0, iniPath) == 1;
     HoverActivateTab = GetPrivateProfileInt(L"界面增强", L"悬停激活标签页", 0, iniPath) == 1;
     HoverTime = GetPrivateProfileInt(L"界面增强", L"悬停时间", HOVER_DEFAULT, iniPath);
     RightTabSwitch = GetPrivateProfileInt(L"界面增强", L"右键快速标签切换", 1, iniPath) == 1;

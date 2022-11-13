@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "tlhelp32.h"
+#include <tlhelp32.h>
 
 
 typedef SHORT(WINAPI* GETKEYSTATE)(int vKey);
@@ -47,13 +47,13 @@ void iEdge()
     // 参数启动
     CheckArgs(iniPath);
 
+    //快捷方式
+    SetAppId();
+
     // 打造便携版Edge
     MakePortable();
 
     // 标签页，书签，地址栏增强
-    //TabBookmark();
-
-    // 启动HOOK线程
     std::thread thook(StartWindowsHook);
     thook.detach();
 }
