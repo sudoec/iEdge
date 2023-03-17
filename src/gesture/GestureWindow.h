@@ -27,12 +27,10 @@ public:
 
     void DrawGestureTrack(Graphics &graphics)
     {
-        wchar_t color[MAX_PATH];
-        GetPrivateProfileStringW(L"鼠标手势", L"轨迹颜色", L"98CC00", color, MAX_PATH, ini_path);
         byte r, g, b;
-        swscanf(color, L"%02hhX%02hhX%02hhX", &r, &g, &b);
+        swscanf(MouseGestureColor, L"%02hhX%02hhX%02hhX", &r, &g, &b);
 
-        Pen pen(Color(200, r, g, b), (Gdiplus::REAL)::GetPrivateProfileIntW(L"鼠标手势", L"轨迹粗细", 3, ini_path));
+        Pen pen(Color(200, r, g, b), (Gdiplus::REAL)::MouseGestureSize);
 
         std::vector<POINT> points = gesture_recognition.get_points();
         if(points.size()<2) return;
@@ -124,11 +122,11 @@ public:
         graphics.SetSmoothingMode(SmoothingModeAntiAlias);
         //graphics.Clear(0x99345678);
 
-        if(::GetPrivateProfileIntW(L"鼠标手势", L"轨迹", 1, ini_path))
+        if(::MouseGestureTrack)
         {
             DrawGestureTrack(graphics);
         }
-        if(::GetPrivateProfileIntW(L"鼠标手势", L"动作", 1, ini_path))
+        if(::MouseGestureAction)
         {
             DrawGestureResult(graphics);
         }
@@ -148,7 +146,7 @@ public:
         }
         RECT rect;
         ::GetWindowRect(main_hwnd, &rect);
-        ::SetWindowPos(m_hWnd, NULL, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, SWP_NOACTIVATE | SWP_NOZORDER);
+        ::SetWindowPos(m_hWnd, NULL, rect.left + 8, rect.top, rect.right - rect.left - 16, rect.bottom - rect.top - 8, SWP_NOACTIVATE | SWP_NOZORDER);
 
         DoUpdateWindow();
 
@@ -181,6 +179,7 @@ private:
     {
         Sleep(50);
         SendKey(action);
+        //if(action==L"Ctrl+T") SendKey(std::wstring(L"Alt+Home"));
     }
     HWND GetTopWnd(HWND hwnd)
     {
@@ -213,17 +212,6 @@ private:
         font_name = ncm.lfMessageFont.lfFaceName;
 
 
-        GetModuleFileNameW(NULL, ini_path, MAX_PATH);
-        (wcsrchr(ini_path, '\\'))[0] = 0;
-        (wcsrchr(ini_path, '\\'))[0] = 0;
-        wcscat(ini_path, L"\\iEdge.ini");
-
-        if (!PathFileExistsW(ini_path))
-        {
-            std::wstring path = ExpandEnvironmentPath(L"%appdata%\\iEdge.ini");
-            wcscpy(ini_path, path.c_str());
-        }
-
         return 0;
     }
 
@@ -235,40 +223,25 @@ private:
 
     std::wstring GetAction(std::wstring &command)
     {
-        wchar_t buffer[256];
-        GetPrivateProfileStringW(L"鼠标手势", command.c_str(), L"", buffer, 256, ini_path);
-        if(buffer[0])
+
+        if (MouseGestureMap.count(command))
         {
-            std::wstring action = buffer;
-            std::size_t pos = action.find(L"|");
-            if (pos != std::wstring::npos)
-            {
-                return action.substr(pos + 1);
-            }
+            return MouseGestureMap[command].second;
         }
 
         return L"";
+
     }
 
     std::wstring GetGestureName(std::wstring &command)
     {
-        wchar_t buffer[256];
-        GetPrivateProfileStringW(L"鼠标手势", command.c_str(), L"", buffer, 256, ini_path);
-        if(buffer[0])
+        if (MouseGestureMap.count(command))
         {
-            std::wstring action = buffer;
-            std::size_t pos = action.find(L"|");
-            if (pos != std::wstring::npos)
-            {
-                return action.substr(0, pos);
-            }
-        }
-        else
-        {
-            return L"无效动作";
+            return MouseGestureMap[command].first;
         }
 
-        return L"";
+        return L"无效动作";;
+
     }
 private:
     Image *image_up;
@@ -281,5 +254,4 @@ private:
     Image *image_down_right;
     std::wstring font_name;
     HWND main_hwnd;
-    wchar_t ini_path[MAX_PATH];
 };
