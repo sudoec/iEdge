@@ -4,11 +4,13 @@
 #include <fstream>
 #include <codecvt>
 
+bool EnableSetAppId = false;
+bool NewTabHomePage = false;
+bool OpenUrlNewTab = false;
+bool RightTabSwitch = false;
 bool HoverActivateTab = false;
 int HoverTime = HOVER_DEFAULT;
-bool RightTabSwitch = false;
-bool OpenUrlNewTab = false;
-bool EnableSetAppId = false;
+
 bool MouseGesture = false;
 bool MouseGestureTrack = false;
 bool MouseGestureAction = false;
@@ -23,10 +25,11 @@ std::string HomePage;
 void ReadConfig(const wchar_t *iniPath)
 {
     EnableSetAppId = GetPrivateProfileInt(L"界面增强", L"快捷方式", 0, iniPath) == 1;
+    NewTabHomePage = GetPrivateProfileInt(L"界面增强", L"新标签打开主页", 0, iniPath) == 1;
+    OpenUrlNewTab = GetPrivateProfileInt(L"界面增强", L"新标签打开网址", 0, iniPath) == 1;
+    RightTabSwitch = GetPrivateProfileInt(L"界面增强", L"右键快速标签切换", 1, iniPath) == 1;
     HoverActivateTab = GetPrivateProfileInt(L"界面增强", L"悬停激活标签页", 0, iniPath) == 1;
     HoverTime = GetPrivateProfileInt(L"界面增强", L"悬停时间", HOVER_DEFAULT, iniPath);
-    RightTabSwitch = GetPrivateProfileInt(L"界面增强", L"右键快速标签切换", 1, iniPath) == 1;
-    OpenUrlNewTab = GetPrivateProfileInt(L"界面增强", L"新标签打开网址", 0, iniPath) == 1;
 
     MouseGesture = GetPrivateProfileInt(L"鼠标手势", L"启用", 1, iniPath) == 1;
     MouseGestureSize = GetPrivateProfileInt(L"鼠标手势", L"轨迹粗细", 3, iniPath);

@@ -179,7 +179,6 @@ private:
     {
         Sleep(50);
         SendKey(action);
-        //if(action==L"Ctrl+T") SendKey(std::wstring(L"Alt+Home"));
     }
     HWND GetTopWnd(HWND hwnd)
     {

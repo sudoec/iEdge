@@ -484,6 +484,14 @@ void SendKey(std::wstring &keys)
     }
     Sleep(20);
 
+    if (NewTabHomePage && keys == L"Ctrl+T")
+    {
+        KEY_DISABLE = TRUE;
+        SendKey(std::wstring(L"Tab"));
+        KEY_DISABLE = FALSE;
+        SendKey(std::wstring(L"Alt+Home"));
+    }
+
     KEY_SHIFT = FALSE;
     KEY_CONTROL = FALSE;
     KEY_MENU = FALSE;

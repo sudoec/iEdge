@@ -252,14 +252,14 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 
         if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
         {
-            std::thread th([]() {SendKey(std::wstring(L"Alt+T")); });
+            std::thread th([]() {SendKey(std::wstring(L"Ctrl+T")); });
             th.detach();
             return 1;
         }
 
         if (wParam == 'W' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
         {
-            std::thread th([]() {SendKey(std::wstring(L"Alt+W")); });
+            std::thread th([]() {SendKey(std::wstring(L"Ctrl+W")); });
             th.detach();
             return 1;
         }
