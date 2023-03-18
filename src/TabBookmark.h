@@ -250,34 +250,35 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         //}
 
 
-        if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
+        if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT) && !IsPressed(VK_MENU))
         {
             std::thread th([]() {SendKey(std::wstring(L"Ctrl+T")); });
             th.detach();
             return 1;
         }
 
-        if (wParam == 'W' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
+        if (wParam == 'W' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT) && !IsPressed(VK_MENU))
         {
             std::thread th([]() {SendKey(std::wstring(L"Ctrl+W")); });
             th.detach();
             return 1;
         }
 
-        if (wParam == VK_RETURN && IsPressed(VK_MENU))  //后台打开地址栏跳转标签
-        {
-            std::thread th([]()
-            {
-                KEY_MENU = TRUE;
-                KEY_SHIFT = TRUE;
-                SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_RETURN, 0);
-                SendMessage(GetForegroundWindow(), WM_KEYUP, VK_RETURN, 0);
-                KEY_MENU = FALSE;
-                KEY_SHIFT = FALSE;
-            });
-            th.detach();
-            return 1;
-        }
+        //if (wParam == VK_RETURN && IsPressed(VK_MENU))  //后台打开地址栏跳转标签
+        //{
+
+        //    std::thread th([]()
+        //    {
+        //        KEY_MENU = TRUE;
+        //        KEY_SHIFT = TRUE;
+        //        SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_RETURN, 0);
+        //        SendMessage(GetForegroundWindow(), WM_KEYUP, VK_RETURN, 0);
+        //        KEY_MENU = FALSE;
+        //        KEY_SHIFT = FALSE;
+        //    });
+        //    th.detach();
+        //    return 1;
+        //}
 
     }
     return CallNextHookEx(keyboard_hook, nCode, wParam, lParam );
