@@ -264,6 +264,13 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
             return 1;
         }
 
+        if (wParam == VK_MENU && BlockSingleAlt)
+        {
+            std::thread th([]() {SendKey(std::wstring(L"Ctrl")); });
+            th.detach();
+            return 1;
+        }
+
         //if (wParam == VK_RETURN && IsPressed(VK_MENU))  //后台打开地址栏跳转标签
         //{
 

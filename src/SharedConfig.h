@@ -5,6 +5,7 @@
 #include <codecvt>
 
 bool EnableSetAppId = false;
+bool BlockSingleAlt = true;
 bool NewTabHomePage = false;
 bool OpenUrlNewTab = false;
 bool RightTabSwitch = false;
@@ -25,6 +26,7 @@ std::string HomePage;
 void ReadConfig(const wchar_t *iniPath)
 {
     EnableSetAppId = GetPrivateProfileInt(L"界面增强", L"快捷方式", 0, iniPath) == 1;
+    BlockSingleAlt = GetPrivateProfileInt(L"界面增强", L"屏蔽转换键", 1, iniPath) == 1;
     NewTabHomePage = GetPrivateProfileInt(L"界面增强", L"新标签打开主页", 0, iniPath) == 1;
     OpenUrlNewTab = GetPrivateProfileInt(L"界面增强", L"新标签打开网址", 0, iniPath) == 1;
     RightTabSwitch = GetPrivateProfileInt(L"界面增强", L"右键快速标签切换", 1, iniPath) == 1;
