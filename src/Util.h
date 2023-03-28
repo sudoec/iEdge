@@ -13,7 +13,6 @@ BOOL KEY_MENU = FALSE;
 BOOL KEY_LWIN = FALSE;
 BOOL KEY_DISABLE = FALSE;
 
-//extern std::wstring HomePage;
 
 void plog(const std::string str)
 {
@@ -209,29 +208,35 @@ bool LoadFromResource(const char *type, const char *name, Function f)
 }
 
 // 释放配置文件
-EXPORT ReleaseIni(const wchar_t *exePath, wchar_t *iniPath)
+void ConfigIni()
 {
+    // exe上一层路径
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    (wcsrchr(exePath, '\\'))[0] = 0;
+    (wcsrchr(exePath, '\\'))[0] = 0;
+
     // ini路径
+    wchar_t iniPath[MAX_PATH];
     wcscpy(iniPath, exePath);
     wcscat(iniPath, L"\\iEdge.ini");
 
     // 已经存在则跳过
-    if (PathFileExistsW(iniPath))
+    if (!PathFileExistsW(iniPath))
     {
-        return;
+        // 从资源中释放默认配置文件
+        LoadFromResource("INI", "CONFIG", [&](const char* data, DWORD size)
+        {
+            FILE* fp = _wfopen(iniPath, L"wb");
+            if (fp)
+            {
+                fwrite(data, size, 1, fp);
+                fclose(fp);
+            }
+        });
     }
 
-    // 从资源中释放默认配置文件
-    LoadFromResource("INI", "CONFIG", [&](const char *data, DWORD size)
-    {
-        FILE *fp = _wfopen(iniPath, L"wb");
-        if (fp)
-        {
-            fwrite(data, size, 1, fp);
-            fclose(fp);
-        }
-    });
-    ExitProcess(0);
+    ReadConfig(iniPath);
 }
 
 // 搜索内存
@@ -337,8 +342,6 @@ uint8_t* SearchModule(const wchar_t *path, const uint8_t* sub, int m)
     }
     return NULL;
 }
-
-void OpenHomePage();
 
 template<typename String, typename Char, typename Function>
 void StringSplit(String *str, Char delim, Function f)

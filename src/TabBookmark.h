@@ -48,30 +48,6 @@ private:
     std::vector <INPUT> inputs_;
 };
 
-//void OpenHomePage()
-//{
-//    //SendKey(std::wstring(L"Ctrl+T"));
-//    //KEY_DISABLE = TRUE;
-//    //SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_TAB, 0);
-//    //SendMessage(GetForegroundWindow(), WM_KEYUP, VK_TAB, 0);
-//    //KEY_DISABLE = FALSE;
-//    //SendKey(std::wstring(L"Alt+Home"));
-//
-//    Sleep(20);
-//    SendKey(std::wstring(L"Alt+D"));
-//    KEY_DISABLE = TRUE;
-//    SendMessage(GetForegroundWindow(), WM_KEYDOWN, VK_BACK, 0);
-//    SendMessage(GetForegroundWindow(), WM_KEYUP, VK_BACK, 0);
-//    for (int i = 0; i < HomePage.length(); i++)
-//    {
-//        PostMessage(GetForegroundWindow(), WM_CHAR, HomePage[i], 0);
-//    }
-//    Sleep(120);
-//    KEY_DISABLE = FALSE;
-//    SendKey(std::wstring(L"Alt+Enter"));
-//
-//}
-
 
 /*
 chrome ui tree
@@ -237,18 +213,6 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
                 return 1;
             }
         }
-
-        //if (wParam == 'Z')
-        //{
-        //    RECT rect;
-        //    HWND hq = GetForegroundWindow();
-        //    GetWindowRect(hq, &rect);
-        //    int window_width = (rect.right - rect.left);
-        //    int window_height = (rect.bottom - rect.top);
-        //    MyDebugView(std::to_string(rect.left) + " " + std::to_string(rect.top) + " " + std::to_string(window_width) + " " + std::to_string(window_height));
-        //    return CallNextHookEx(keyboard_hook, nCode, wParam, lParam);
-        //}
-
 
         if (wParam == 'T' && IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT) && !IsPressed(VK_MENU))
         {

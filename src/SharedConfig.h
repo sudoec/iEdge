@@ -1,4 +1,4 @@
-#pragma data_seg(".SHARED")
+ï»¿#pragma data_seg(".SHARED")
 #include <map>
 #include <string>
 #include <fstream>
@@ -8,78 +8,65 @@ bool EnableSetAppId = false;
 bool BlockSingleAlt = true;
 bool NewTabHomePage = false;
 bool OpenUrlNewTab = false;
-bool RightTabSwitch = false;
+bool RightTabSwitch = true;
 bool HoverActivateTab = false;
 int HoverTime = HOVER_DEFAULT;
 
-bool MouseGesture = false;
-bool MouseGestureTrack = false;
+bool MouseGesture = true;
+bool MouseGestureTrack = true;
 bool MouseGestureAction = false;
-int MouseGestureSize = 3;
-TCHAR MouseGestureColor[MAX_PATH] = L"98CC00";
-std::map<std::wstring, std::pair<std::wstring, std::wstring>> MouseGestureMap;
-std::string HomePage;
+int MouseGestureSize = 5;
+TCHAR MouseGestureColor[MAX_PATH] = L"337AB7";
+std::map<std::wstring, std::pair<std::wstring, std::wstring>> MouseGestureMap = {
+    {L"â†‘", std::make_pair(L"æ‰“å¼€ä¸»é¡µ", L"Ctrl+T")},
+    {L"â†“", std::make_pair(L"é¡µé¢é¡¶éƒ¨", L"Home")},
+    {L"â†", std::make_pair(L"åé€€", L"Alt+â†")},
+    {L"â†’", std::make_pair(L"å‰è¿›", L"Alt+â†’")},
+    {L"â†‘â†“", std::make_pair(L"åˆ·æ–°", L"F5")},
+    {L"â†“â†‘", std::make_pair(L"å¼ºåˆ¶åˆ·æ–°", L"Ctrl+F5")},
+    {L"â†“â†’", std::make_pair(L"å…³é—­æ ‡ç­¾", L"Ctrl+W")},
+    {L"â†“â†", std::make_pair(L"æ’¤é”€å…³é—­", L"Ctrl+Shift+T")},
+    {L"â†’â†‘", std::make_pair(L"ä¸Šç¿»é¡µ", L"PageUp")},
+    {L"â†’â†“", std::make_pair(L"ä¸‹ç¿»é¡µ", L"PageDown")},
+    {L"â†‘â†", std::make_pair(L"åˆ‡æ¢åˆ°å³ä¾§æ ‡ç­¾", L"Ctrl+PageUp")},
+    {L"â†‘â†’", std::make_pair(L"åˆ‡æ¢åˆ°å·¦ä¾§æ ‡ç­¾", L"Ctrl+PageDown")}
+};
+
 
 #pragma data_seg()
 #pragma comment(linker, "/section:.SHARED,RWS")
 
-void ReadConfig(const wchar_t *iniPath)
+void ReadConfig(const wchar_t* iniPath)
 {
-    EnableSetAppId = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"¿ì½İ·½Ê½", 0, iniPath) == 1;
-    BlockSingleAlt = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ÆÁ±Î×ª»»¼ü", 1, iniPath) == 1;
-    NewTabHomePage = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ĞÂ±êÇ©´ò¿ªÖ÷Ò³", 0, iniPath) == 1;
-    OpenUrlNewTab = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ĞÂ±êÇ©´ò¿ªÍøÖ·", 0, iniPath) == 1;
-    RightTabSwitch = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ÓÒ¼ü¿ìËÙ±êÇ©ÇĞ»»", 1, iniPath) == 1;
-    HoverActivateTab = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ĞüÍ£¼¤»î±êÇ©Ò³", 0, iniPath) == 1;
-    HoverTime = GetPrivateProfileInt(L"½çÃæÔöÇ¿", L"ĞüÍ£Ê±¼ä", HOVER_DEFAULT, iniPath);
+    EnableSetAppId = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"å¿«æ·æ–¹å¼", 0, iniPath) == 1;
+    BlockSingleAlt = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"å±è”½è½¬æ¢é”®", 1, iniPath) == 1;
+    NewTabHomePage = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"æ–°æ ‡ç­¾æ‰“å¼€ä¸»é¡µ", 0, iniPath) == 1;
+    OpenUrlNewTab = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"æ–°æ ‡ç­¾æ‰“å¼€ç½‘å€", 0, iniPath) == 1;
+    RightTabSwitch = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"å³é”®å¿«é€Ÿæ ‡ç­¾åˆ‡æ¢", 1, iniPath) == 1;
+    HoverActivateTab = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"æ‚¬åœæ¿€æ´»æ ‡ç­¾é¡µ", 0, iniPath) == 1;
+    HoverTime = GetPrivateProfileInt(L"ç•Œé¢å¢å¼º", L"æ‚¬åœæ—¶é—´", HOVER_DEFAULT, iniPath);
 
-    MouseGesture = GetPrivateProfileInt(L"Êó±êÊÖÊÆ", L"ÆôÓÃ", 1, iniPath) == 1;
-    MouseGestureSize = GetPrivateProfileInt(L"Êó±êÊÖÊÆ", L"¹ì¼£´ÖÏ¸", 3, iniPath);
-    MouseGestureTrack = GetPrivateProfileInt(L"Êó±êÊÖÊÆ", L"¹ì¼£", 1, iniPath) == 1;
-    MouseGestureAction = GetPrivateProfileInt(L"Êó±êÊÖÊÆ", L"¶¯×÷", 1, iniPath) == 1;
-    GetPrivateProfileString(L"Êó±êÊÖÊÆ", L"¹ì¼£ÑÕÉ«", L"98CC00", MouseGestureColor, MAX_PATH, iniPath);
+    MouseGesture = GetPrivateProfileInt(L"é¼ æ ‡æ‰‹åŠ¿", L"å¯ç”¨", 1, iniPath) == 1;
+    MouseGestureSize = GetPrivateProfileInt(L"é¼ æ ‡æ‰‹åŠ¿", L"è½¨è¿¹ç²—ç»†", 5, iniPath);
+    MouseGestureTrack = GetPrivateProfileInt(L"é¼ æ ‡æ‰‹åŠ¿", L"è½¨è¿¹", 1, iniPath) == 1;
+    MouseGestureAction = GetPrivateProfileInt(L"é¼ æ ‡æ‰‹åŠ¿", L"åŠ¨ä½œ", 0, iniPath) == 1;
+    GetPrivateProfileString(L"é¼ æ ‡æ‰‹åŠ¿", L"è½¨è¿¹é¢œè‰²", L"337AB7", MouseGestureColor, MAX_PATH, iniPath);
 
     std::wifstream infile(iniPath, std::ios::binary);
     infile.imbue(std::locale(infile.getloc(), new std::codecvt_utf16<wchar_t, 0x10ffff, std::consume_header>));
     std::wstring line;
     while (std::getline(infile, line))
     {
-        if (line[0] == L'¡ü' || line[0] == L'¡ı' || line[0] == L'¡û' || line[0] == L'¡ú')
+        if (line[0] == L'â†‘' || line[0] == L'â†“' || line[0] == L'â†' || line[0] == L'â†’')
         {
             for (int i = line.length() - 1; i >= 0; i--)
                 if (line[i] == 10 || line[i] == 13) line.erase(i);
 
             MouseGestureMap[line.substr(0, line.find(L"="))] = std::make_pair(line.substr(line.find(L"=") + 1, line.find(L"|") - line.find(L"=") - 1), line.substr(line.find(L"|") + 1));
 
-
-            //OutputDebugString(line.substr(0, line.find(L"=")).c_str());
-            //OutputDebugString(line.substr(line.find(L"=") + 1, line.find(L"|") - line.find(L"=") - 1).c_str());
-            //OutputDebugString(line.substr(line.find(L"|") + 1).c_str());
         }
-            
+
     }
     infile.close();
 
-    //MessageBox(NULL, std::to_wstring(MouseGesture).c_str(), L"", MB_OK);
-    
-}
-
-std::wstring CheckArgs(const wchar_t* iniPath)
-{
-    wchar_t Params[2048];
-    GetPrivateProfileSection(L"Æô¶¯²ÎÊı", Params, 2048, iniPath);
-    std::wstring Args = GetCommandLineW();
-    int index = Args.find(L".exe") + 6;
-    std::wstring Path = Args.substr(0, index);
-    Args = Args.substr(min(Args.length(), index), std::string::npos);
-    if (Args.length() < 5)
-    {
-        std::wstring exec = Path + Params;
-        std::string str(exec.begin(), exec.end());
-        WinExec(str.c_str(), SW_SHOW);
-        //ShellExecuteW(NULL, L"open", exec.c_str(), L"", L"", SW_HIDE);
-        //RunExecute(exec.c_str());
-        ExitProcess(0);
-    }
-    return Args;
 }

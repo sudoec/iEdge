@@ -31,23 +31,10 @@ SHORT WINAPI DetourGetKeyState(int vKey)
 
 void iEdge()
 {
-    // exe上一层路径
-    wchar_t exePath[MAX_PATH];
-    GetModuleFileNameW(NULL, exePath, MAX_PATH);
-    (wcsrchr(exePath, '\\'))[0] = 0;
-    (wcsrchr(exePath, '\\'))[0] = 0;
+    // 配置设置
+    ConfigIni();
 
-    // 生成默认ini文件
-    wchar_t iniPath[MAX_PATH];
-    ReleaseIni(exePath, iniPath);
-
-    // 读取配置
-    ReadConfig(iniPath);
-
-    // 参数启动
-    CheckArgs(iniPath);
-
-    //快捷方式
+    // 快捷方式
     SetAppId();
 
     // 打造便携版Edge

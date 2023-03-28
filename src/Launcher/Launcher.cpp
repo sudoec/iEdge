@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -9,6 +9,10 @@
 
 
 using namespace std;
+
+static bool transparent = false;
+
+typedef LONG(WINAPI* PROCNTQSIP)(HANDLE, UINT, PVOID, ULONG, PULONG);
 
 typedef NTSTATUS(NTAPI* pfnNtCreateThreadEx)(
     OUT PHANDLE hThread,
@@ -24,61 +28,233 @@ typedef NTSTATUS(NTAPI* pfnNtCreateThreadEx)(
     OUT PVOID lpBytesBuffer);
 
 
-//Ê¹ÓÃNtCreateThreadExÔÚÄ¿±ê½ø³Ì´´½¨Ïß³ÌÊµÏÖ×¢Èë
-BOOL InjectDll(HANDLE ProcessHandle, LPWSTR DllFullPath)
+//ä½¿ç”¨NtCreateThreadExåœ¨ç›®æ ‡è¿›ç¨‹åˆ›å»ºçº¿ç¨‹å®ç°æ³¨å…¥
+BOOL _Caesar_(HANDLE ProcessHandle, LPWSTR DllFullPath)
 {
-    // ÔÚ¶Ô·½½ø³Ì¿Õ¼äÉêÇëÄÚ´æ,´æ´¢DllÍêÕûÂ·¾¶
+    if (transparent)
+        return TRUE;
+    // åœ¨å¯¹æ–¹è¿›ç¨‹ç©ºé—´ç”³è¯·å†…å­˜,å­˜å‚¨Dllå®Œæ•´è·¯å¾„
     //UINT32	DllFullPathLength = (strlen(DllFullPath) + 1);
-    size_t	DllFullPathLength = (wcslen(DllFullPath) + 1) * 2;
-    PVOID 	DllFullPathBufferData = VirtualAllocEx(ProcessHandle, NULL, DllFullPathLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    size_t  DllFullPathLength = (wcslen(DllFullPath) + 1) * 2;
+    PVOID   DllFullPathBufferData = VirtualAllocEx(ProcessHandle, NULL, DllFullPathLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     if (DllFullPathBufferData == NULL)
-    {
-        CloseHandle(ProcessHandle);
         return FALSE;
-    }
 
-    // ½«DllFullPathĞ´½ø¸Õ¸ÕÉêÇëµÄÄÚ´æÖĞ
-    SIZE_T	ReturnLength;
+    // å°†DllFullPathå†™è¿›åˆšåˆšç”³è¯·çš„å†…å­˜ä¸­
+    SIZE_T  ReturnLength;
     BOOL bOk = WriteProcessMemory(ProcessHandle, DllFullPathBufferData, DllFullPath, DllFullPathLength, &ReturnLength);
 
     LPTHREAD_START_ROUTINE	LoadLibraryAddress = NULL;
-    HMODULE					Kernel32Module = GetModuleHandle(L"Kernel32");
+    HMODULE Kernel32Module = GetModuleHandle(L"Kernel32");
 
-    LoadLibraryAddress = (LPTHREAD_START_ROUTINE)GetProcAddress(Kernel32Module, "LoadLibraryW");
+    char funcA_str[] = { 'L', 'o', 'a', 'd','L','i','b','r','a','r','y','W','\0' };
+    LoadLibraryAddress = (LPTHREAD_START_ROUTINE)GetProcAddress(Kernel32Module, funcA_str);
 
-    pfnNtCreateThreadEx NtCreateThreadEx = (pfnNtCreateThreadEx)GetProcAddress(GetModuleHandle(L"ntdll.dll"), "NtCreateThreadEx");
+    char funcB_str[] = { 'N', 't', 'C', 'r','e','a','t','e','T','h','r','e', 'a','d','E','x','\0' };
+    pfnNtCreateThreadEx NtCreateThreadEx = (pfnNtCreateThreadEx)GetProcAddress(GetModuleHandle(L"ntdll.dll"), funcB_str);
     if (NtCreateThreadEx == NULL)
-    {
-        CloseHandle(ProcessHandle);
         return FALSE;
-    }
 
     HANDLE ThreadHandle = NULL;
     // 0x1FFFFF #define THREAD_ALL_ACCESS         (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFFF)
     NtCreateThreadEx(&ThreadHandle, 0x1FFFFF, NULL, ProcessHandle, (LPTHREAD_START_ROUTINE)LoadLibraryAddress, DllFullPathBufferData, FALSE, NULL, NULL, NULL, NULL);
     if (ThreadHandle == NULL)
-    {
-        CloseHandle(ProcessHandle);
         return FALSE;
-    }
 
     if (WaitForSingleObject(ThreadHandle, INFINITE) == WAIT_FAILED)
-    {
         return FALSE;
-    }
 
-    CloseHandle(ProcessHandle);
-    CloseHandle(ThreadHandle);
+    if (DllFullPathBufferData != NULL)
+        VirtualFreeEx(ProcessHandle, DllFullPathBufferData, 0, MEM_RELEASE);
+
+    if (ThreadHandle != NULL)
+        CloseHandle(ThreadHandle);
 
     return TRUE;
 }
 
+BOOL GetProcessCmdline(HANDLE procesHandle, wstring& cmdline)
+{
+    PROCESS_BASIC_INFORMATION pbi = { 0 };
+    PEB                       peb;
+    //PROCESS_PARAMETERS        ProcParam;
+    DWORD64                     dwDummy;
+    DWORD64                     dwSize;
+    LPVOID                    lpAddress;
+    RTL_USER_PROCESS_PARAMETERS para;
+
+    PROCNTQSIP NtQueryInformationProcess = (PROCNTQSIP)GetProcAddress(GetModuleHandleW(L"ntdll"), "NtQueryInformationProcess");
+    //è·å–ä¿¡æ¯
+    if (0 != NtQueryInformationProcess(procesHandle, ProcessBasicInformation, (PVOID)&pbi, sizeof(pbi), NULL))
+    {
+        return false;
+    }
+    if (pbi.PebBaseAddress == nullptr)
+    {
+        //do somthing 
+    }
+    if (FALSE == ReadProcessMemory(procesHandle, pbi.PebBaseAddress, &peb, sizeof(peb), &dwDummy))
+    {
+        return false;
+    }
+    if (FALSE == ReadProcessMemory(procesHandle, peb.ProcessParameters, &para, sizeof(para), &dwDummy))
+    {
+        return false;
+    }
+
+    lpAddress = para.CommandLine.Buffer;
+    dwSize = para.CommandLine.Length;
+
+    TCHAR* cmdLineBuffer = new TCHAR[dwSize + 1];
+    ZeroMemory(cmdLineBuffer, (dwSize + 1) * sizeof(WCHAR));
+    if (FALSE == ReadProcessMemory(procesHandle, lpAddress, (LPVOID)cmdLineBuffer, dwSize, &dwDummy))
+    {
+        delete[] cmdLineBuffer;
+        return false;
+    }
+    cmdline = cmdLineBuffer;
+
+    delete[] cmdLineBuffer;
+    return true;
+}
+
+BOOL TraverseEdge(wstring cmdStart)
+{
+    PROCESSENTRY32 pe32;
+    pe32.dwSize = sizeof(pe32);
+
+    HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hProcessSnap == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    BOOL bResult = Process32First(hProcessSnap, &pe32);
+
+    while (bResult)
+    {
+        if (wcscmp(pe32.szExeFile, L"msedge.exe") == 0 || wcscmp(pe32.szExeFile, L"chrome.exe") == 0)
+        {
+            std::wstring name = pe32.szExeFile;
+            int id = pe32.th32ProcessID;
+
+            auto processHaldle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID);
+            if (nullptr == processHaldle)
+            {
+                bResult = Process32Next(hProcessSnap, &pe32);
+                continue;
+            }
+
+            wstring Cmdline;
+            if (GetProcessCmdline(processHaldle, Cmdline))
+            {
+                if (Cmdline.find(cmdStart) < Cmdline.length())
+                    return true;
+            }
+
+            if (nullptr != processHaldle)
+                CloseHandle(processHaldle);
+        }
+
+        bResult = Process32Next(hProcessSnap, &pe32);
+    }
+
+    CloseHandle(hProcessSnap);
+
+    return false;
+}
+
+wstring CombineCmdLine(wstring CmdA, wstring CmdB)
+{
+    //WCHAR buffer[2048];
+    //swprintf_s(buffer, 2048, L"[%s] %llu\n[%s] %llu\n", &CmdA[0], CmdA.length(), &CmdB[0], CmdB.length());
+    //OutputDebugString(buffer);
+
+    vector<wstring> SubA, SubB;
+    for (int i = 0; i < CmdA.length(); i++)
+    {
+        static wstring cmd;
+        static bool quote = false;
+        if (CmdA[i] == L'"')
+        {
+            quote = !quote;
+        }
+        if (!quote && !cmd.empty() && (CmdA[i] == L' ' || CmdA.length() == i + 1))
+        {
+            if (CmdA.length() == i + 1)
+                cmd.push_back(CmdA[i]);
+            SubA.push_back(cmd);
+            cmd.clear();
+        }
+        if (quote || CmdA[i] != L' ')
+        {
+            cmd.push_back(CmdA[i]);
+        }
+    }
+    for (int i = 0; i < CmdB.length(); i++)
+    {
+        static wstring cmd;
+        static bool quote = false;
+        if (CmdB[i] == L'"')
+        {
+            quote = !quote;
+        }
+        if (!quote && !cmd.empty() && (CmdB[i] == L' ' || CmdB.length() == i + 1))
+        {
+            if (CmdB.length() == i + 1)
+                cmd.push_back(CmdB[i]);
+            SubB.push_back(cmd);
+            cmd.clear();
+        }
+        if (quote || CmdB[i] != L' ')
+        {
+            cmd.push_back(CmdB[i]);
+        }
+    }
+    
+    for (int i = 0; i < SubA.size(); i++)
+    {
+        for (int j = 0; j < SubB.size(); j++)
+        {
+            if (SubA[i].find(L"--user-data-dir=") < SubA[i].length() && SubB[j].find(L"--user-data-dir=") < SubB[j].length())
+            {
+                SubA[i] = SubB[j];
+                break;
+            }
+        }
+
+    }
+
+    for (int i = 0; i < SubB.size(); i++)
+    {
+        bool dup = false;
+        for (int j = 0; j < SubA.size(); j++)
+        {
+            if (SubA[j] == SubB[i])
+            {
+                dup = true;
+            }
+        }
+        if (!dup)
+            SubA.push_back(SubB[i]);
+    }
+
+    wstring Combine;
+    for (int i = 0; i < SubA.size(); i++)
+    {
+        Combine.append(SubA[i]);
+        Combine.append(L" ");
+    }
+    Combine.pop_back();
+
+    return Combine;
+}
+
 wstring GetAppFolder(LPWSTR Dir)
 {
-    //ÎÄ¼ş¾ä±ú
-    //×¢Òâ£ºÎÒ·¢ÏÖÓĞĞ©ÎÄÕÂ´úÂë´Ë´¦ÊÇlongÀàĞÍ£¬Êµ²âÔËĞĞÖĞ»á±¨´í·ÃÎÊÒì³£
+    //æ–‡ä»¶å¥æŸ„
+    //æ³¨æ„ï¼šæˆ‘å‘ç°æœ‰äº›æ–‡ç« ä»£ç æ­¤å¤„æ˜¯longç±»å‹ï¼Œå®æµ‹è¿è¡Œä¸­ä¼šæŠ¥é”™è®¿é—®å¼‚å¸¸
     intptr_t hFile = 0;
-    //ÎÄ¼şĞÅÏ¢
+    //æ–‡ä»¶ä¿¡æ¯
     struct _wfinddata_t fileinfo;
     wstring p;
     if ((hFile = _wfindfirst(p.assign(Dir).append(L"\\*").c_str(), &fileinfo)) != -1)
@@ -99,10 +275,10 @@ wstring GetAppFolder(LPWSTR Dir)
 
 wstring GetDataFolder(LPWSTR Dir)
 {
-    //ÎÄ¼ş¾ä±ú
-    //×¢Òâ£ºÎÒ·¢ÏÖÓĞĞ©ÎÄÕÂ´úÂë´Ë´¦ÊÇlongÀàĞÍ£¬Êµ²âÔËĞĞÖĞ»á±¨´í·ÃÎÊÒì³£
+    //æ–‡ä»¶å¥æŸ„
+    //æ³¨æ„ï¼šæˆ‘å‘ç°æœ‰äº›æ–‡ç« ä»£ç æ­¤å¤„æ˜¯longç±»å‹ï¼Œå®æµ‹è¿è¡Œä¸­ä¼šæŠ¥é”™è®¿é—®å¼‚å¸¸
     intptr_t hFile = 0;
-    //ÎÄ¼şĞÅÏ¢
+    //æ–‡ä»¶ä¿¡æ¯
     struct _wfinddata_t fileinfo;
     wstring p;
     if ((hFile = _wfindfirst(p.assign(Dir).append(L"\\*").c_str(), &fileinfo)) != -1)
@@ -156,26 +332,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         sConLin = wstring(sWinDir) + GetAppFolder(sWinDir) + L"\\chrome.exe";
 
     wchar_t Params[2048];
-    GetPrivateProfileSectionW(L"Æô¶¯²ÎÊı", Params, 2048, wstring(sWinDir).append(L"iEdge.ini").c_str());
+    GetPrivateProfileSectionW(L"å¯åŠ¨å‚æ•°", Params, 2048, wstring(sWinDir).append(L"iEdge.ini").c_str());
     wstring sParams = Params;
-    size_t pIndex = sParams.find(L'"', sParams.find(L'"')+1);
-    if (pIndex > 0 && pIndex != sParams.npos && sParams[pIndex-1] == L'.')
+    if (sParams.empty())
+        sParams = L"--user-data-dir=\"..\\USER.\" --disable-background-networking --disable-backing-store-limit";
+
+    size_t sIndex = sParams.find(L"--user-data-dir=") + 16;
+    wstring dPath = sParams.substr(sIndex, sParams.find(L'"', sIndex + 1) - 15);
+    if (sIndex < sParams.length() && dPath[dPath.length()-2] == L'.')
     {
         std::hash<std::wstring> hasher;
         size_t hWinDir = hasher(sWinDir);
         wstring hashStr = to_wstring(hWinDir).substr(0, 4);
-        sParams.insert(pIndex, hashStr);
+        sParams.insert(sIndex + dPath.length() - 1, hashStr);
+        dPath.insert(dPath.length() - 1, hashStr);
 
         wstring sData = wstring(sWinDir) + GetDataFolder(sWinDir);
-        wstring nData = sParams.substr(sParams.find(L'"'), pIndex-sParams.find(L'"'));
-        nData = wstring(sWinDir) + nData.substr(nData.rfind(L'\\')+1) + hashStr;
+        wstring nData = wstring(sWinDir) + dPath.substr(dPath.rfind('\\') + 1, dPath.length() - dPath.rfind('\\') - 2);
         
         if (sData != nData)
             _wrename(sData.c_str(), nData.c_str());
     }
 
-    sConLin.append(L" ").append(sParams);
+    sConLin.append(L" ").append(CombineCmdLine(sParams, lpCmdLine));
 
+    if (TraverseEdge(dPath))
+        transparent = true;
 
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -184,36 +366,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ZeroMemory(&pi, sizeof(pi));
     si.cb = sizeof(si);
 
-    //´´½¨Ò»¸öĞÂ½ø³Ì  
+    //åˆ›å»ºä¸€ä¸ªæ–°è¿›ç¨‹  
     if (CreateProcessW(
-        NULL,   //  Ö¸ÏòÒ»¸öNULL½áÎ²µÄ¡¢ÓÃÀ´Ö¸¶¨¿ÉÖ´ĞĞÄ£¿éµÄ¿í×Ö½Ú×Ö·û´®  
-        &sConLin[0], // ÃüÁîĞĞ×Ö·û´®  
-        NULL, //    Ö¸ÏòÒ»¸öSECURITY_ATTRIBUTES½á¹¹Ìå£¬Õâ¸ö½á¹¹Ìå¾ö¶¨ÊÇ·ñ·µ»ØµÄ¾ä±ú¿ÉÒÔ±»×Ó½ø³Ì¼Ì³Ğ¡£  
-        NULL, //    Èç¹ûlpProcessAttributes²ÎÊıÎª¿Õ£¨NULL£©£¬ÄÇÃ´¾ä±ú²»ÄÜ±»¼Ì³Ğ¡£<Í¬ÉÏ>  
-        false,//    Ö¸Ê¾ĞÂ½ø³ÌÊÇ·ñ´Óµ÷ÓÃ½ø³Ì´¦¼Ì³ĞÁË¾ä±ú¡£   
-        CREATE_SUSPENDED,  //  Ö¸¶¨¸½¼ÓµÄ¡¢ÓÃÀ´¿ØÖÆÓÅÏÈÀàºÍ½ø³ÌµÄ´´½¨µÄ±ê  
-            //  CREATE_NEW_CONSOLE  ĞÂ¿ØÖÆÌ¨´ò¿ª×Ó½ø³Ì  
-            //  CREATE_SUSPENDED    ×Ó½ø³Ì´´½¨ºó¹ÒÆğ£¬Ö±µ½µ÷ÓÃResumeThreadº¯Êı  
-        NULL, //    Ö¸ÏòÒ»¸öĞÂ½ø³ÌµÄ»·¾³¿é¡£Èç¹û´Ë²ÎÊıÎª¿Õ£¬ĞÂ½ø³ÌÊ¹ÓÃµ÷ÓÃ½ø³ÌµÄ»·¾³  
-        NULL, //    Ö¸¶¨×Ó½ø³ÌµÄ¹¤×÷Â·¾¶  
-        &si, // ¾ö¶¨ĞÂ½ø³ÌµÄÖ÷´°ÌåÈçºÎÏÔÊ¾µÄSTARTUPINFO½á¹¹Ìå  
-        &pi  // ½ÓÊÕĞÂ½ø³ÌµÄÊ¶±ğĞÅÏ¢µÄPROCESS_INFORMATION½á¹¹Ìå  
+        NULL,   //  æŒ‡å‘ä¸€ä¸ªNULLç»“å°¾çš„ã€ç”¨æ¥æŒ‡å®šå¯æ‰§è¡Œæ¨¡å—çš„å®½å­—èŠ‚å­—ç¬¦ä¸²  
+        &sConLin[0], // å‘½ä»¤è¡Œå­—ç¬¦ä¸²  
+        NULL, //    æŒ‡å‘ä¸€ä¸ªSECURITY_ATTRIBUTESç»“æ„ä½“ï¼Œè¿™ä¸ªç»“æ„ä½“å†³å®šæ˜¯å¦è¿”å›çš„å¥æŸ„å¯ä»¥è¢«å­è¿›ç¨‹ç»§æ‰¿ã€‚  
+        NULL, //    å¦‚æœlpProcessAttributeså‚æ•°ä¸ºç©ºï¼ˆNULLï¼‰ï¼Œé‚£ä¹ˆå¥æŸ„ä¸èƒ½è¢«ç»§æ‰¿ã€‚<åŒä¸Š>  
+        false,//    æŒ‡ç¤ºæ–°è¿›ç¨‹æ˜¯å¦ä»è°ƒç”¨è¿›ç¨‹å¤„ç»§æ‰¿äº†å¥æŸ„ã€‚   
+        CREATE_SUSPENDED,  //  æŒ‡å®šé™„åŠ çš„ã€ç”¨æ¥æ§åˆ¶ä¼˜å…ˆç±»å’Œè¿›ç¨‹çš„åˆ›å»ºçš„æ ‡  
+            //  CREATE_NEW_CONSOLE  æ–°æ§åˆ¶å°æ‰“å¼€å­è¿›ç¨‹  
+            //  CREATE_SUSPENDED    å­è¿›ç¨‹åˆ›å»ºåæŒ‚èµ·ï¼Œç›´åˆ°è°ƒç”¨ResumeThreadå‡½æ•°  
+        NULL, //    æŒ‡å‘ä¸€ä¸ªæ–°è¿›ç¨‹çš„ç¯å¢ƒå—ã€‚å¦‚æœæ­¤å‚æ•°ä¸ºç©ºï¼Œæ–°è¿›ç¨‹ä½¿ç”¨è°ƒç”¨è¿›ç¨‹çš„ç¯å¢ƒ  
+        NULL, //    æŒ‡å®šå­è¿›ç¨‹çš„å·¥ä½œè·¯å¾„  
+        &si, // å†³å®šæ–°è¿›ç¨‹çš„ä¸»çª—ä½“å¦‚ä½•æ˜¾ç¤ºçš„STARTUPINFOç»“æ„ä½“  
+        &pi  // æ¥æ”¶æ–°è¿›ç¨‹çš„è¯†åˆ«ä¿¡æ¯çš„PROCESS_INFORMATIONç»“æ„ä½“  
     ))
     {
 
-        InjectDll(pi.hProcess, &sDllPath[0]);
+        _Caesar_(pi.hProcess, &sDllPath[0]);
 
         ResumeThread(pi.hThread);
 
-        //ÏÂÃæÁ½ĞĞ¹Ø±Õ¾ä±ú£¬½â³ı±¾½ø³ÌºÍĞÂ½ø³ÌµÄ¹ØÏµ£¬²»È»ÓĞ¿ÉÄÜ²»Ğ¡ĞÄµ÷ÓÃTerminateProcessº¯Êı¹Øµô×Ó½ø³Ì
-        CloseHandle(pi.hProcess);
+        //ä¸‹é¢ä¸¤è¡Œå…³é—­å¥æŸ„ï¼Œè§£é™¤æœ¬è¿›ç¨‹å’Œæ–°è¿›ç¨‹çš„å…³ç³»ï¼Œä¸ç„¶æœ‰å¯èƒ½ä¸å°å¿ƒè°ƒç”¨TerminateProcesså‡½æ•°å…³æ‰å­è¿›ç¨‹
         CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
     }
 
-    //ÖÕÖ¹×Ó½ø³Ì
+    //ç»ˆæ­¢å­è¿›ç¨‹
     //TerminateProcess(pi.hProcess, 300);
 
-    //ÖÕÖ¹±¾½ø³Ì£¬×´Ì¬Âë
+    //ç»ˆæ­¢æœ¬è¿›ç¨‹ï¼ŒçŠ¶æ€ç 
     //ExitProcess(1001);
 
     return 0;
