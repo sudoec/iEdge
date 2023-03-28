@@ -29,6 +29,25 @@ SHORT WINAPI DetourGetKeyState(int vKey)
     //return State;
 }
 
+typedef LSTATUS(WINAPI* REGSETVALUEEXW)(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, CONST BYTE* lpData, DWORD cbData);
+REGSETVALUEEXW fpRegSetValueExW = NULL;
+LSTATUS WINAPI DetourRegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, CONST BYTE* lpData, DWORD cbData)
+{
+    WCHAR* lpStr = new WCHAR[cbData + 1];
+    memcpy(lpStr, lpData, cbData);
+    lpStr[cbData] = 0;
+    
+    std::wstring npString;
+    std::wstring lpString(lpStr);
+    if (lpString.find(L"\\msedge.exe") < lpString.length())
+    {
+        npString = lpString.substr(0, lpString.rfind(L"\\", lpString.rfind(L"\\") - 1) + 1) + L"iEdge.exe" + lpString.substr(lpString.rfind(L"\\") + 11);
+    }
+    delete[] lpStr;
+
+    return fpRegSetValueExW(hKey, lpValueName, Reserved, dwType, (BYTE*)&npString[0], 2*(npString.length()+1));
+}
+
 void iEdge()
 {
     // 配置设置
@@ -61,7 +80,12 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, LPVOID pv)
         {
             MH_CreateHook(&GetKeyState, &DetourGetKeyState, reinterpret_cast<LPVOID*>(&fpGetKeyState));
             MH_EnableHook(&GetKeyState);
+
+            MH_CreateHook(&RegSetValueExW, &DetourRegSetValueExW, reinterpret_cast<LPVOID*>(&fpRegSetValueExW));
+            MH_EnableHook(&RegSetValueExW);
+
             iEdge();
+
         }
 
     }

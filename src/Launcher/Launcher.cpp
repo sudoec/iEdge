@@ -335,7 +335,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     GetPrivateProfileSectionW(L"启动参数", Params, 2048, wstring(sWinDir).append(L"iEdge.ini").c_str());
     wstring sParams = Params;
     if (sParams.empty())
-        sParams = L"--user-data-dir=\"..\\USER.\" --disable-background-networking --disable-backing-store-limit";
+        sParams = L"--user-data-dir=\"..\\Data.\" --no-first-run --force-local-ntp --disable-breakpad --disable-logging --disable-background-networking --disable-backing-store-limit";
 
     size_t sIndex = sParams.find(L"--user-data-dir=") + 16;
     wstring dPath = sParams.substr(sIndex, sParams.find(L'"', sIndex + 1) - 15);
