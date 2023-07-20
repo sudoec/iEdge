@@ -21,6 +21,59 @@
   <ItemGroup>
     <ClInclude Include="src\Appid.h" />
     <ClInclude Include="src\Bosskey.h" />
+    <ClInclude Include="src\brotli\common\constants.h" />
+    <ClInclude Include="src\brotli\common\context.h" />
+    <ClInclude Include="src\brotli\common\dictionary.h" />
+    <ClInclude Include="src\brotli\common\platform.h" />
+    <ClInclude Include="src\brotli\common\transform.h" />
+    <ClInclude Include="src\brotli\common\version.h" />
+    <ClInclude Include="src\brotli\dec\bit_reader.h" />
+    <ClInclude Include="src\brotli\dec\huffman.h" />
+    <ClInclude Include="src\brotli\dec\prefix.h" />
+    <ClInclude Include="src\brotli\dec\state.h" />
+    <ClInclude Include="src\brotli\enc\backward_references.h" />
+    <ClInclude Include="src\brotli\enc\backward_references_hq.h" />
+    <ClInclude Include="src\brotli\enc\backward_references_inc.h" />
+    <ClInclude Include="src\brotli\enc\bit_cost.h" />
+    <ClInclude Include="src\brotli\enc\bit_cost_inc.h" />
+    <ClInclude Include="src\brotli\enc\block_encoder_inc.h" />
+    <ClInclude Include="src\brotli\enc\block_splitter.h" />
+    <ClInclude Include="src\brotli\enc\block_splitter_inc.h" />
+    <ClInclude Include="src\brotli\enc\brotli_bit_stream.h" />
+    <ClInclude Include="src\brotli\enc\cluster.h" />
+    <ClInclude Include="src\brotli\enc\cluster_inc.h" />
+    <ClInclude Include="src\brotli\enc\command.h" />
+    <ClInclude Include="src\brotli\enc\compress_fragment.h" />
+    <ClInclude Include="src\brotli\enc\compress_fragment_two_pass.h" />
+    <ClInclude Include="src\brotli\enc\dictionary_hash.h" />
+    <ClInclude Include="src\brotli\enc\encoder_dict.h" />
+    <ClInclude Include="src\brotli\enc\entropy_encode.h" />
+    <ClInclude Include="src\brotli\enc\entropy_encode_static.h" />
+    <ClInclude Include="src\brotli\enc\fast_log.h" />
+    <ClInclude Include="src\brotli\enc\find_match_length.h" />
+    <ClInclude Include="src\brotli\enc\hash.h" />
+    <ClInclude Include="src\brotli\enc\hash_composite_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_forgetful_chain_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_longest_match64_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_longest_match_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_longest_match_quickly_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_rolling_inc.h" />
+    <ClInclude Include="src\brotli\enc\hash_to_binary_tree_inc.h" />
+    <ClInclude Include="src\brotli\enc\histogram.h" />
+    <ClInclude Include="src\brotli\enc\histogram_inc.h" />
+    <ClInclude Include="src\brotli\enc\literal_cost.h" />
+    <ClInclude Include="src\brotli\enc\memory.h" />
+    <ClInclude Include="src\brotli\enc\metablock.h" />
+    <ClInclude Include="src\brotli\enc\metablock_inc.h" />
+    <ClInclude Include="src\brotli\enc\params.h" />
+    <ClInclude Include="src\brotli\enc\prefix.h" />
+    <ClInclude Include="src\brotli\enc\quality.h" />
+    <ClInclude Include="src\brotli\enc\ringbuffer.h" />
+    <ClInclude Include="src\brotli\enc\static_dict.h" />
+    <ClInclude Include="src\brotli\enc\static_dict_lut.h" />
+    <ClInclude Include="src\brotli\enc\utf8_util.h" />
+    <ClInclude Include="src\brotli\enc\write_bits.h" />
+    <ClInclude Include="src\fastsearch.h" />
     <ClInclude Include="src\gesture\GestureMgr.h" />
     <ClInclude Include="src\gesture\GestureRecognition.h" />
     <ClInclude Include="src\gesture\GestureWindow.h" />
@@ -34,6 +87,10 @@
     <ClInclude Include="src\minhook\src\HDE\table32.h" />
     <ClInclude Include="src\minhook\src\HDE\table64.h" />
     <ClInclude Include="src\minhook\src\trampoline.h" />
+    <ClInclude Include="src\mini_gzip\miniz.h" />
+    <ClInclude Include="src\mini_gzip\mini_gzip.h" />
+    <ClInclude Include="src\PakFile.h" />
+    <ClInclude Include="src\PakPatch.h" />
     <ClInclude Include="src\Parsekeys.h" />
     <ClInclude Include="src\SharedConfig.h" />
     <ClInclude Include="src\TabBookmark.h" />
@@ -41,12 +98,43 @@
     <ClInclude Include="src\version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\brotli\common\constants.c" />
+    <ClCompile Include="src\brotli\common\context.c" />
+    <ClCompile Include="src\brotli\common\dictionary.c" />
+    <ClCompile Include="src\brotli\common\platform.c" />
+    <ClCompile Include="src\brotli\common\transform.c" />
+    <ClCompile Include="src\brotli\dec\bit_reader.c" />
+    <ClCompile Include="src\brotli\dec\decode.c" />
+    <ClCompile Include="src\brotli\dec\huffman.c" />
+    <ClCompile Include="src\brotli\dec\state.c" />
+    <ClCompile Include="src\brotli\enc\backward_references.c" />
+    <ClCompile Include="src\brotli\enc\backward_references_hq.c" />
+    <ClCompile Include="src\brotli\enc\bit_cost.c" />
+    <ClCompile Include="src\brotli\enc\block_splitter.c" />
+    <ClCompile Include="src\brotli\enc\brotli_bit_stream.c" />
+    <ClCompile Include="src\brotli\enc\cluster.c" />
+    <ClCompile Include="src\brotli\enc\command.c" />
+    <ClCompile Include="src\brotli\enc\compress_fragment.c" />
+    <ClCompile Include="src\brotli\enc\compress_fragment_two_pass.c" />
+    <ClCompile Include="src\brotli\enc\dictionary_hash.c" />
+    <ClCompile Include="src\brotli\enc\encode.c" />
+    <ClCompile Include="src\brotli\enc\encoder_dict.c" />
+    <ClCompile Include="src\brotli\enc\entropy_encode.c" />
+    <ClCompile Include="src\brotli\enc\fast_log.c" />
+    <ClCompile Include="src\brotli\enc\histogram.c" />
+    <ClCompile Include="src\brotli\enc\literal_cost.c" />
+    <ClCompile Include="src\brotli\enc\memory.c" />
+    <ClCompile Include="src\brotli\enc\metablock.c" />
+    <ClCompile Include="src\brotli\enc\static_dict.c" />
+    <ClCompile Include="src\brotli\enc\utf8_util.c" />
     <ClCompile Include="src\iEdge.cpp" />
     <ClCompile Include="src\minhook\src\buffer.c" />
     <ClCompile Include="src\minhook\src\HDE\hde32.c" />
     <ClCompile Include="src\minhook\src\HDE\hde64.c" />
     <ClCompile Include="src\minhook\src\hook.c" />
     <ClCompile Include="src\minhook\src\trampoline.c" />
+    <ClCompile Include="src\mini_gzip\miniz.c" />
+    <ClCompile Include="src\mini_gzip\mini_gzip.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="iEdge.rc" />
@@ -74,28 +162,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
@@ -117,32 +205,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>$(SolutionDir)bin\temp\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>iEdge</TargetName>
-    <IncludePath>src\WTL;$(IncludePath)</IncludePath>
+    <IncludePath>src\brotli\include;src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>$(SolutionDir)bin\temp\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>iEdge</TargetName>
-    <IncludePath>src\WTL;$(IncludePath)</IncludePath>
+    <IncludePath>src\brotli\include;src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>$(SolutionDir)bin\temp\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>iEdge</TargetName>
     <IncludePath>src\WTL;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\temp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>$(SolutionDir)bin\temp\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>iEdge</TargetName>

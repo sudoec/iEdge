@@ -4,6 +4,7 @@
 #include <map>
 #include <fstream>
 #include <string>
+#include "fastsearch.h"
 
 #define MAX_SIZE 32767
 
@@ -22,7 +23,7 @@ void plog(const std::string str)
     sprintf_s(time, "[%4d/%02d/%02d %02d:%02d:%02d.%03d]\n",
         sys.wYear, sys.wMonth, sys.wDay, sys.wHour, sys.wMinute,
         sys.wSecond, sys.wMilliseconds);
-    std::ofstream	OsWrite("plogs.txt", std::ofstream::app);
+    std::ofstream	OsWrite("../plogs.txt", std::ofstream::app);
     OsWrite << time;
     OsWrite << str;
     OsWrite << std::endl;
@@ -90,22 +91,28 @@ std::wstring ExpandEnvironmentPath(const std::wstring &path)
 }
 
 // 替换字符串
-void ReplaceStringInPlace(std::wstring& subject, const std::wstring& search, const std::wstring& replace)
+bool ReplaceStringInPlace(std::wstring& subject, const std::wstring& search, const std::wstring& replace)
 {
+    bool find = false;
     size_t pos = 0;
     while ((pos = subject.find(search, pos)) != std::wstring::npos) {
         subject.replace(pos, search.length(), replace);
         pos += replace.length();
+        find = true;
     }
+    return find;
 }
 
-void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace)
+bool ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace)
 {
+    bool find = false;
     size_t pos = 0;
     while ((pos = subject.find(search, pos)) != std::string::npos) {
         subject.replace(pos, search.length(), replace);
         pos += replace.length();
+        find = true;
     }
+    return find;
 }
 
 // 压缩HTML
@@ -138,6 +145,7 @@ void compression_html(std::string& html)
     html.clear();
     for ( auto &line : lines)
     {
+        html += "\n";
         html += trim(line);
     }
 }
@@ -242,37 +250,7 @@ void ConfigIni()
 // 搜索内存
 uint8_t* memmem(uint8_t* src, int n, const uint8_t* sub, int m)
 {
-    if (m > n)
-    {
-        return NULL;
-    }
-
-    short skip[256];
-    for (int i = 0; i < 256; i++)
-    {
-        skip[i] = m;
-    }
-    for (int i = 0; i < m - 1; i++)
-    {
-        skip[sub[i]] = m - i - 1;
-    }
-
-    int pos = 0;
-    while (pos <= n - m)
-    {
-        int j = m - 1;
-        while (j >= 0 && src[pos + j] == sub[j])
-        {
-            j--;
-        }
-        if (j < 0)
-        {
-            return src + pos;
-        }
-        pos = pos + skip[src[pos + m - 1]];
-    }
-
-    return NULL;
+    return (uint8_t*)FastSearch(src, n, sub, m);
 }
 
 bool GetVersion(wchar_t *vinfo)

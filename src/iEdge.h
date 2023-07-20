@@ -52,11 +52,15 @@ HMODULE hInstance;
 #include "util.h"
 
 #include "minhook\include\MinHook.h"
+#include "mini_gzip\miniz.c"
+#include "mini_gzip\mini_gzip.h"
+#include "mini_gzip\mini_gzip.c"
 
 #include "gesture\GestureRecognition.h"
 #include "gesture\GestureWindow.h"
 #include "gesture\GestureMgr.h"
 #include "TabBookmark.h"
+#include "PakPatch.h"
 
 #include "patchs.h"
 #include "Bosskey.h"

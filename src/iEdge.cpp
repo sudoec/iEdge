@@ -56,8 +56,11 @@ void iEdge()
     // 快捷方式
     SetAppId();
 
-    // 打造便携版Edge
+    // 打造便携版
     MakePortable();
+
+    // 修补资源文件
+    //PakPatch();
 
     // 标签页，书签，地址栏增强
     std::thread thook(StartWindowsHook);
