@@ -10,8 +10,6 @@
 
 using namespace std;
 
-static bool transparent = false;
-
 typedef LONG(WINAPI* PROCNTQSIP)(HANDLE, UINT, PVOID, ULONG, PULONG);
 
 typedef NTSTATUS(NTAPI* pfnNtCreateThreadEx)(
@@ -31,8 +29,6 @@ typedef NTSTATUS(NTAPI* pfnNtCreateThreadEx)(
 //使用NtCreateThreadEx在目标进程创建线程实现注入
 BOOL _Caesar_(HANDLE ProcessHandle, LPWSTR DllFullPath)
 {
-    if (transparent)
-        return TRUE;
     // 在对方进程空间申请内存,存储Dll完整路径
     //UINT32	DllFullPathLength = (strlen(DllFullPath) + 1);
     size_t  DllFullPathLength = (wcslen(DllFullPath) + 1) * 2;
@@ -356,15 +352,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     sConLin.append(L" ").append(CombineCmdLine(sParams, lpCmdLine));
 
-    if (TraverseEdge(dPath))
-        transparent = true;
-
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
 
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi));
     si.cb = sizeof(si);
+
+    // 避免重复启动
+    for (int i = 0; i < 100; i++)
+    {
+        if (i >= 20)   return 0;
+        Sleep(100);
+        if (!TraverseEdge(dPath))   break;
+    }
 
     //创建一个新进程  
     if (CreateProcessW(
